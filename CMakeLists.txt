@@ -23,6 +23,7 @@ find_package(message_filters REQUIRED)
 find_package(Sophus REQUIRED)
 find_package(Pangolin REQUIRED)
 find_package(ORB_SLAM3 REQUIRED)
+find_package(OpenCV REQUIRED)
 
 include_directories(
   include
@@ -39,12 +40,14 @@ add_executable(mono
   src/monocular/monocular-slam-node.cpp
 )
 ament_target_dependencies(mono rclcpp sensor_msgs cv_bridge ORB_SLAM3 Pangolin)
+target_link_libraries(mono ${OpenCV_LIBS}) # Use plain style
 
 add_executable(rgbd
   src/rgbd/rgbd.cpp
   src/rgbd/rgbd-slam-node.cpp
 )
 ament_target_dependencies(rgbd rclcpp sensor_msgs cv_bridge message_filters ORB_SLAM3 Pangolin)
+target_link_libraries(rgbd ${OpenCV_LIBS}) # Use plain style
 
 add_executable(stereo
   src/stereo/stereo.cpp
@@ -52,12 +55,14 @@ add_executable(stereo
 )
 ament_target_dependencies(stereo rclcpp sensor_msgs cv_bridge message_filters
 ORB_SLAM3 Pangolin)
+target_link_libraries(stereo ${OpenCV_LIBS}) # Use plain style
 
 add_executable(stereo-inertial
   src/stereo-inertial/stereo-inertial.cpp
   src/stereo-inertial/stereo-inertial-node.cpp
 )
 ament_target_dependencies(stereo-inertial rclcpp sensor_msgs cv_bridge ORB_SLAM3 Pangolin)
+target_link_libraries(stereo-inertial ${OpenCV_LIBS}) # Use plain style
 
 install(TARGETS mono rgbd stereo stereo-inertial
   DESTINATION lib/${PROJECT_NAME})
@@ -67,4 +72,3 @@ install(TARGETS mono rgbd stereo stereo-inertial
 #  DESTINATION share/${PROJECT_NAME}/)
 
 ament_package()
-
