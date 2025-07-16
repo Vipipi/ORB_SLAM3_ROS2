@@ -12,7 +12,7 @@
 
   <depend>rclcpp</depend>
   <depend>sensor_msgs</depend>
-  <depend>cv_bridge</depend>
+  <depend>cv_bridge_orbslam3</depend>
   <depend>message_filters</depend>
   <depend>Pangolin</depend>
 
