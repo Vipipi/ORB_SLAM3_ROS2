@@ -68,7 +68,7 @@ $ ros2 run orbslam3 stereo PATH_TO_VOCABULARY PATH_TO_YAML_CONFIG_FILE BOOL_RECT
 ```
   - `RGBD` mode  
 ```
-$ ros2 run orbslam3 rgbd PATH_TO_VOCABULARY PATH_TO_YAML_CONFIG_FILE
+$ ros2 run orbslam3 rgbd src/orbslam3_ros2/vocabulary/ORBvoc.txt src/orbslam3_ros2/
 ```
   - `STEREO-INERTIAL` mode  
 ```
