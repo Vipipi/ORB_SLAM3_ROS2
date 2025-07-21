@@ -17,7 +17,7 @@ This repository is ROS2 wrapping to use ORB_SLAM3
 
 - Install related ROS2 package
 ```
-$ sudo apt install ros-$ROS_DISTRO-vision-opencv && sudo apt install ros-$ROS_DISTRO-message-filters
+$ sudo apt install ros-humble-vision-opencv && sudo apt install ros-humble-message-filters
 ```
 
 ## How to build
@@ -25,7 +25,7 @@ $ sudo apt install ros-$ROS_DISTRO-vision-opencv && sudo apt install ros-$ROS_DI
 ```
 $ mkdir -p colcon_ws/src
 $ cd ~/colcon_ws/src
-$ git clone https://github.com/zang09/ORB_SLAM3_ROS2.git orbslam3_ros2
+$ git clone -b humble https://github.com/Vipipi/ORB_SLAM3_ROS2.git orbslam3_ros2
 ```
 
 2. Change this [line](https://github.com/zang09/ORB_SLAM3_ROS2/blob/ee82428ed627922058b93fea1d647725c813584e/CMakeLists.txt#L5) to your own `python site-packages` path
