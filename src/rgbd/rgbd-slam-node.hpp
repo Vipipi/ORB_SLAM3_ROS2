@@ -21,6 +21,7 @@
 #include "Tracking.h"
 
 #include "utility.hpp"
+#include <memory>
 
 class RgbdSlamNode : public rclcpp::Node
 {
@@ -35,7 +36,7 @@ private:
 
     void GrabRGBD(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD);
 
-    ORB_SLAM3::System* m_SLAM;
+    std::unique_ptr<ORB_SLAM3::System> m_SLAM;
 
     cv_bridge::CvImageConstPtr cv_ptrRGB;
     cv_bridge::CvImageConstPtr cv_ptrD;
