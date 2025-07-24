@@ -10,9 +10,7 @@
 #include <message_filters/sync_policies/approximate_time.h>
 
 #include <opencv2/core/core.hpp>
-
-// Add this include for std::unique_ptr
-#include <memory> 
+#include <memory>
 
 #include "System.h"
 #include "utility.hpp"
@@ -20,7 +18,6 @@
 class RgbdSlamNode : public rclcpp::Node
 {
 public:
-    // This is the corrected constructor declaration
     RgbdSlamNode(const std::string &voc_path, const std::string &settings_path);
 
     ~RgbdSlamNode();
@@ -28,11 +25,13 @@ public:
 private:
     void GrabRGBD(const sensor_msgs::msg::Image::SharedPtr msgRGB, const sensor_msgs::msg::Image::SharedPtr msgD);
 
-    // This is the corrected member variable
     std::unique_ptr<ORB_SLAM3::System> m_SLAM;
 
-    cv_bridge::CvImagePtr cv_ptrRGB;
-    cv_bridge::CvImagePtr cv_ptrD;
+    // --- CHANGE IS HERE ---
+    // Changed CvImagePtr to CvImageConstPtr
+    cv_bridge::CvImageConstPtr cv_ptrRGB;
+    cv_bridge::CvImageConstPtr cv_ptrD;
+    // --- END OF CHANGE ---
 
     using ImageMsg = sensor_msgs::msg::Image;
     using approximate_sync_policy = message_filters::sync_policies::ApproximateTime<ImageMsg, ImageMsg>;
