@@ -2,32 +2,27 @@
 
 #include <opencv2/core/core.hpp>
 
-using std::placeholders::_1;
-
-RgbdSlamNode::RgbdSlamNode(ORB_SLAM3::System* pSLAM)
-:   Node("ORB_SLAM3_ROS2"),
-    m_SLAM(pSLAM)
+// Change the constructor to create the SLAM object
+RgbdSlamNode::RgbdSlamNode(const std::string& voc_path, const std::string& settings_path)
+    :   Node("ORB_SLAM3_ROS2"),
+        m_SLAM(new ORB_SLAM3::System(voc_path, settings_path, ORB_SLAM3::System::RGBD, true))
 {
     rgb_sub = std::make_shared<message_filters::Subscriber<ImageMsg> >(shared_ptr<rclcpp::Node>(this), "camera/rgb");
     depth_sub = std::make_shared<message_filters::Subscriber<ImageMsg> >(shared_ptr<rclcpp::Node>(this), "camera/depth");
 
     syncApproximate = std::make_shared<message_filters::Synchronizer<approximate_sync_policy> >(approximate_sync_policy(10), *rgb_sub, *depth_sub);
     syncApproximate->registerCallback(&RgbdSlamNode::GrabRGBD, this);
-
 }
 
 RgbdSlamNode::~RgbdSlamNode()
 {
-    // Stop all threads
+    // This code is now safe because m_SLAM is a smart pointer
     m_SLAM->Shutdown();
-
-    // Save camera trajectory
     m_SLAM->SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
 }
 
 void RgbdSlamNode::GrabRGBD(const ImageMsg::SharedPtr msgRGB, const ImageMsg::SharedPtr msgD)
 {
-    // Copy the ros rgb image message to cv::Mat.
     try
     {
         cv_ptrRGB = cv_bridge::toCvShare(msgRGB);
@@ -38,7 +33,6 @@ void RgbdSlamNode::GrabRGBD(const ImageMsg::SharedPtr msgRGB, const ImageMsg::Sh
         return;
     }
 
-    // Copy the ros depth image message to cv::Mat.
     try
     {
         cv_ptrD = cv_bridge::toCvShare(msgD);
