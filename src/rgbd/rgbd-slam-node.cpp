@@ -2,25 +2,28 @@
 
 #include <opencv2/core/core.hpp>
 
-// Change the constructor to create the SLAM object
+// ADD THIS LINE FOR std::chrono_literals
+using namespace std::chrono_literals;
+
 RgbdSlamNode::RgbdSlamNode(const std::string& voc_path, const std::string& settings_path)
     :   Node("ORB_SLAM3_ROS2"),
         m_SLAM(new ORB_SLAM3::System(voc_path, settings_path, ORB_SLAM3::System::RGBD, true))
 {
-    // --- CHANGE IS HERE ---
-    // Added rclcpp::SensorDataQoS() to make the subscribers compatible with sensor data
     rclcpp::QoS qos_profile(rclcpp::KeepLast(10), rmw_qos_profile_sensor_data);
 
     rgb_sub = std::make_shared<message_filters::Subscriber<ImageMsg> >(shared_ptr<rclcpp::Node>(this), "camera/rgb", qos_profile.get_rmw_qos_profile());
     depth_sub = std::make_shared<message_filters::Subscriber<ImageMsg> >(shared_ptr<rclcpp::Node>(this), "camera/depth", qos_profile.get_rmw_qos_profile());
+
+    // --- CHANGE IS HERE ---
+    // We added the "slop" parameter (0.1s) to the synchronizer policy
+    approximate_sync_policy policy = approximate_sync_policy(10);
+    policy.setSlop(0.1s);
+
+    syncApproximate = std::make_shared<message_filters::Synchronizer<approximate_sync_policy>>(policy, *rgb_sub, *depth_sub);
     // --- END OF CHANGE ---
 
-
-    syncApproximate = std::make_shared<message_filters::Synchronizer<approximate_sync_policy> >(approximate_sync_policy(10), *rgb_sub, *depth_sub);
     syncApproximate->registerCallback(&RgbdSlamNode::GrabRGBD, this);
 }
-
-// ... the rest of your file remains the same ...
 
 RgbdSlamNode::~RgbdSlamNode()
 {
