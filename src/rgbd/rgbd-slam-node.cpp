@@ -7,12 +7,20 @@ RgbdSlamNode::RgbdSlamNode(const std::string& voc_path, const std::string& setti
     :   Node("ORB_SLAM3_ROS2"),
         m_SLAM(new ORB_SLAM3::System(voc_path, settings_path, ORB_SLAM3::System::RGBD, true))
 {
-    rgb_sub = std::make_shared<message_filters::Subscriber<ImageMsg> >(shared_ptr<rclcpp::Node>(this), "camera/rgb");
-    depth_sub = std::make_shared<message_filters::Subscriber<ImageMsg> >(shared_ptr<rclcpp::Node>(this), "camera/depth");
+    // --- CHANGE IS HERE ---
+    // Added rclcpp::SensorDataQoS() to make the subscribers compatible with sensor data
+    rclcpp::QoS qos_profile(rclcpp::KeepLast(10), rmw_qos_profile_sensor_data);
+
+    rgb_sub = std::make_shared<message_filters::Subscriber<ImageMsg> >(shared_ptr<rclcpp::Node>(this), "camera/rgb", qos_profile.get_rmw_qos_profile());
+    depth_sub = std::make_shared<message_filters::Subscriber<ImageMsg> >(shared_ptr<rclcpp::Node>(this), "camera/depth", qos_profile.get_rmw_qos_profile());
+    // --- END OF CHANGE ---
+
 
     syncApproximate = std::make_shared<message_filters::Synchronizer<approximate_sync_policy> >(approximate_sync_policy(10), *rgb_sub, *depth_sub);
     syncApproximate->registerCallback(&RgbdSlamNode::GrabRGBD, this);
 }
+
+// ... the rest of your file remains the same ...
 
 RgbdSlamNode::~RgbdSlamNode()
 {
