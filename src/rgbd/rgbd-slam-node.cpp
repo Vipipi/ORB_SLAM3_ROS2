@@ -14,9 +14,10 @@ RgbdSlamNode::RgbdSlamNode(const std::string& voc_path, const std::string& setti
     rgb_sub = std::make_shared<message_filters::Subscriber<ImageMsg> >(shared_ptr<rclcpp::Node>(this), "camera/rgb", qos_profile.get_rmw_qos_profile());
     depth_sub = std::make_shared<message_filters::Subscriber<ImageMsg> >(shared_ptr<rclcpp::Node>(this), "camera/depth", qos_profile.get_rmw_qos_profile());
 
-    // --- CHANGE IS HERE ---
-    // We added the "slop" parameter (0.1s) to the synchronizer policy
     approximate_sync_policy policy = approximate_sync_policy(10);
+    
+    // --- TYPO FIX IS HERE ---
+    // Corrected function name to setSlop
     policy.setSlop(0.1s);
 
     syncApproximate = std::make_shared<message_filters::Synchronizer<approximate_sync_policy>>(policy, *rgb_sub, *depth_sub);
