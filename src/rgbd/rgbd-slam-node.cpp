@@ -1,8 +1,8 @@
 #include "rgbd-slam-node.hpp"
 #include <opencv2/core/core.hpp>
 
-// ADD THIS LINE FOR std::chrono_literals
-using namespace std::chrono_literals;
+// Note: We no longer need chrono_literals
+// using namespace std::chrono_literals; 
 
 RgbdSlamNode::RgbdSlamNode(const std::string& voc_path, const std::string& settings_path)
     :   Node("ORB_SLAM3_ROS2"),
@@ -13,12 +13,12 @@ RgbdSlamNode::RgbdSlamNode(const std::string& voc_path, const std::string& setti
     rgb_sub = std::make_shared<message_filters::Subscriber<ImageMsg>>(shared_ptr<rclcpp::Node>(this), "camera/rgb", qos_profile.get_rmw_qos_profile());
     depth_sub = std::make_shared<message_filters::Subscriber<ImageMsg>>(shared_ptr<rclcpp::Node>(this), "camera/depth", qos_profile.get_rmw_qos_profile());
 
-    // --- LOGIC FIX IS HERE ---
-    // Create the synchronizer with the policy directly
+    // --- FINAL CORRECTED LOGIC ---
+    // Create the synchronizer
     syncApproximate = std::make_shared<message_filters::Synchronizer<approximate_sync_policy>>(approximate_sync_policy(10), *rgb_sub, *depth_sub);
     
-    // Set the slop on the synchronizer object itself
-    syncApproximate->setSlop(0.1s);
+    // Set the slop by creating an explicit rclcpp::Duration object
+    syncApproximate->setSlop(rclcpp::Duration::from_seconds(0.1));
     // --- END OF CHANGE ---
 
     syncApproximate->registerCallback(&RgbdSlamNode::GrabRGBD, this);
